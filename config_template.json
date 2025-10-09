@@ -1,0 +1,25 @@
+{
+    "chains": [
+        {"name": "Polygon", "chain_id": 137, "rpc_url": ""},
+        {"name": "Arbitrum", "chain_id": 42161, "rpc_url": ""},
+        {"name": "Optimism", "chain_id": 10, "rpc_url": "", "fallback_rpc": ""}
+    ],
+    "dexes": [
+        {"name": "Quickswap", "router": "", "fees": 0.002},
+        {"name": "SushiSwap", "router": "", "fees": 0.002},
+        {"name": "UniswapV3", "router": "", "fee_tier": 3000}
+    ],
+    "pairs": [
+        {"name": "", "tokenIn": "", "tokenOut": "", "amount": 0, "path": [], "dex": ""}
+    ],
+    "ml_settings": {
+        "ml_model": "xgboost",
+        "ml_threshold": 0.8,
+        "timesteps": 10,
+        "max_volatility": 0.05
+    },
+    "gas_threshold": 100,
+    "poll_interval": 2,
+    "authorized_users": [],
+    "logging_level": "INFO"
+}

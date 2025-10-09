@@ -1,0 +1,26 @@
+{
+    "chains": [
+        {"name": "Polygon", "chain_id": 137, "rpc_url": "https://polygon-rpc.com"},
+        {"name": "Arbitrum", "chain_id": 42161, "rpc_url": "https://arb1.arbitrum.io/rpc"},
+        {"name": "Optimism", "chain_id": 10, "rpc_url": "https://mainnet.optimism.io", "fallback_rpc": "https://rpc.ankr.com/optimism"}
+    ],
+    "dexes": [
+        {"name": "Quickswap", "router": "0xa5E0829CaCEd8fFDD4De3cC9083f6150a9436c2b", "fees": 0.002},
+        {"name": "SushiSwap", "router": "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506", "fees": 0.002},
+        {"name": "UniswapV3", "router": "0xE592427A0AEce92De3Edee1F18E0157C05861564", "fee_tier": 3000}
+    ],
+    "pairs": [
+        {"name": "USDC/ETH", "tokenIn": "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174", "tokenOut": "0x7ceB23fD6bD3aC3f3b9896eF6D4a8373b52d2e3e", "amount": 1000000, "path": [], "dex": "Quickswap"},
+        {"name": "USDT/WMATIC", "tokenIn": "0xc2132D05D31c914a87C6611C10748AEb04B58e8F", "tokenOut": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270", "amount": 1000000, "path": [], "dex": "SushiSwap"}
+    ],
+    "ml_settings": {
+        "ml_model": "xgboost",
+        "ml_threshold": 0.8,
+        "timesteps": 10,
+        "max_volatility": 0.05
+    },
+    "gas_threshold": 100,
+    "poll_interval": 2,
+    "authorized_users": [],
+    "logging_level": "INFO"
+}
