@@ -2,6 +2,8 @@ import psutil
 import redis
 from web3 import Web3
 import json
+import os
+from logger import robust_redis
 
 redis_client = redis.Redis(host='localhost', port=6379, db=0, password=os.getenv('REDIS_PASS'))
 

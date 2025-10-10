@@ -11,3 +11,4 @@ pysqlcipher3==1.0.4
 pytest==7.2.0
 psutil==5.9.4
 ratelimit==2.2.1
+nest-asyncio==1.5.6

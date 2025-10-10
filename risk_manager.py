@@ -24,7 +24,7 @@ class RiskManager:
     def __init__(self):
         self.daily_loss_limit = 50  # USD
         self.max_consecutive_losses = 3
-        self.min_profit_threshold = 0.5  # 0.5% minimum profit for testing
+        self.min_profit_threshold = 0.1  # 0.1% minimum profit - LOWERED FOR MORE TRADES
         self.max_position_size = 1000  # USD max per trade
 
         # Track performance
@@ -33,12 +33,12 @@ class RiskManager:
         self.last_reset = time.time()
         self.emergency_stop = False
 
-        # Gas price thresholds (gwei)
+        # Gas price thresholds (gwei) - AGGRESSIVE SETTINGS FOR PROFIT
         self.gas_thresholds = {
-            RiskLevel.LOW: 50,
-            RiskLevel.MEDIUM: 100,
-            RiskLevel.HIGH: 200,
-            RiskLevel.EXTREME: 500
+            RiskLevel.LOW: 1000,      # Allow trades up to 1000 gwei
+            RiskLevel.MEDIUM: 3000,   # Allow trades up to 3000 gwei
+            RiskLevel.HIGH: 6000,     # Allow trades up to 6000 gwei
+            RiskLevel.EXTREME: 10000  # Emergency stop at 10000 gwei
         }
 
     def reset_daily_stats(self):

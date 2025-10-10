@@ -80,10 +80,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         print(f"Error starting bot: {e}")
 
-if __name__ == "__main__":
-    print("Script starting...")
-    main()
-
 async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await check_auth(update, context): return
     redis_client.set('monitoring', 'false')
@@ -166,7 +162,18 @@ async def main():
         app.add_handler(CommandHandler('feedback', feedback))
         
         print("Starting bot polling...")
-        app.run_polling(drop_pending_updates=True)
+        # Handle the case where an event loop is already running
+        try:
+            app.run_polling(drop_pending_updates=True)
+        except RuntimeError as e:
+            if "event loop" in str(e):
+                print("Detected existing event loop, trying alternative approach...")
+                # If we're in an environment with existing event loop, create a new one
+                import nest_asyncio
+                nest_asyncio.apply()
+                app.run_polling(drop_pending_updates=True)
+            else:
+                raise
     except Exception as e:
         print(f"Error in main function: {e}")
         import traceback
@@ -174,5 +181,31 @@ async def main():
 
 if __name__ == "__main__":
     print("Script starting...")
-    import asyncio
-    asyncio.run(main())
+    try:
+        import asyncio
+        # Check if there's already a running event loop
+        try:
+            loop = asyncio.get_running_loop()
+            print("Detected running event loop, using asyncio.create_task()")
+            # If we're in an environment with a running loop, we need to handle this differently
+            # For now, let's try to run it in a new thread
+            import threading
+            def run_bot():
+                new_loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(new_loop)
+                new_loop.run_until_complete(main())
+            
+            bot_thread = threading.Thread(target=run_bot, daemon=True)
+            bot_thread.start()
+            print("Bot started in background thread")
+            # Keep the main thread alive
+            bot_thread.join()
+        except RuntimeError:
+            # No running loop, we can run normally
+            asyncio.run(main())
+    except KeyboardInterrupt:
+        print("Bot stopped by user")
+    except Exception as e:
+        print(f"Error starting bot: {e}")
+        import traceback
+        traceback.print_exc()

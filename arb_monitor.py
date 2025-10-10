@@ -8,7 +8,7 @@ from web3 import Web3
 from web3.exceptions import ContractLogicError, TransactionNotFound
 from web3.middleware import geth_poa_middleware
 from eth_account import Account
-# from ml_config import predict_opportunity  # Commented out due to XGBoost issues
+# # from ml_config import predict_opportunity  # Commented out due to XGBoost issues  # Commented out due to XGBoost issues
 from load_config import load_config_with_env_vars
 from dotenv import load_dotenv
 from price_oracle import fetch_data
@@ -16,11 +16,12 @@ from risk_manager import risk_manager
 from capital_manager import capital_manager
 from trading_analytics import trading_analytics
 from gas_optimizer import gas_optimizer
+from sandwich_mev import init_sandwich_mev
 
 # Set up logging
 logging.basicConfig(filename='bot.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-test_mode = True  # Set to True for testing without execution
+test_mode = False  # Set to True for testing without execution
 
 UNISWAP_V2_FACTORY_ABI = [
     {
@@ -96,6 +97,47 @@ def robust_call(call, retries=10, delay=1.0):
     logging.error("RPC failed after all retries")
     raise Exception("RPC failed")
 
+def estimate_router_price_and_slippage(w3, router_address, token_in, token_out, amount_in, dex_name):
+    """Estimate actual execution price and slippage using DEX router"""
+    try:
+        # Create router contract
+        router_abi = [
+            {
+                "inputs": [
+                    {"internalType": "uint256", "name": "amountIn", "type": "uint256"},
+                    {"internalType": "address[]", "name": "path", "type": "address[]"}
+                ],
+                "name": "getAmountsOut",
+                "outputs": [{"internalType": "uint256[]", "name": "amounts", "type": "uint256[]"}],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ]
+        
+        router_contract = w3.eth.contract(address=router_address, abi=router_abi)
+        
+        # For direct pairs, use simple path [tokenIn, tokenOut]
+        path = [token_in, token_out]
+        
+        # Call getAmountsOut
+        amounts_out = router_contract.functions.getAmountsOut(amount_in, path).call()
+        
+        if len(amounts_out) >= 2:
+            amount_out = amounts_out[-1]  # Last amount is the output
+            
+            # Calculate actual execution price (amount_out / amount_in)
+            # Adjust for token decimals (assuming both are 6 decimals for stablecoins, 18 for others)
+            token_in_decimals = 6 if token_in in ['0x3c499C542cEF5E3811e1192CE70d8cc03d5C3359', '0xc2132D05D31c914a87C6611C10748AEb04B58e8F'] else 18
+            token_out_decimals = 6 if token_out in ['0x3c499C542cEF5E3811e1192CE70d8cc03d5C3359', '0xc2132D05D31c914a87C6611C10748AEb04B58e8F'] else 18
+            
+            execution_price = (amount_out / 10**token_out_decimals) / (amount_in / 10**token_in_decimals)
+            
+            return execution_price, amount_out
+        
+    except Exception as e:
+        logging.warning(f"Failed to get router price for {dex_name}: {e}")
+    
+    return None, None
 def find_arbitrage_opportunities(w3, config, gas_price):
     """Find arbitrage opportunities by comparing prices across DEXes"""
     opportunities = []
@@ -133,9 +175,48 @@ def find_arbitrage_opportunities(w3, config, gas_price):
         buy_price = prices[best_buy_dex]['price']
         sell_price = prices[best_sell_dex]['price']
         
-        # Calculate arbitrage profit percentage
+        # Calculate arbitrage profit percentage (accounting for DEX fees and slippage)
         if buy_price > 0:
-            profit_pct = (sell_price - buy_price) / buy_price * 100
+            # Get DEX fees from config
+            buy_dex_fee = next((d.get('fees', 0.003) for d in config['dexes'] if d['name'] == best_buy_dex), 0.003)
+            sell_dex_fee = next((d.get('fees', 0.003) for d in config['dexes'] if d['name'] == best_sell_dex), 0.003)
+            
+            # Use position size for slippage calculation (from capital manager)
+            from capital_manager import capital_manager
+            position_size_usd = capital_manager.calculate_position_size({'profit_pct': 0.8})  # Assume 0.8% spread for sizing
+            # Convert USD to token amount (rough approximation for USDC pairs)
+            amount_in = int(position_size_usd * 10**6)  # 6 decimals for USDC
+            
+            # Get router-based execution prices for slippage calculation
+            buy_router_price, buy_amount_out = estimate_router_price_and_slippage(
+                w3, prices[best_buy_dex]['router'], token_pair[0], token_pair[1], amount_in, best_buy_dex
+            )
+            sell_router_price, sell_amount_out = estimate_router_price_and_slippage(
+                w3, prices[best_sell_dex]['router'], token_pair[1], token_pair[0], amount_in, best_sell_dex
+            )
+            
+            logging.info(f"Router prices - Buy {best_buy_dex}: {buy_router_price}, Sell {best_sell_dex}: {sell_router_price}")
+            
+            # Calculate slippage as difference between API price and router execution price
+            buy_slippage = abs(buy_router_price - buy_price) / buy_price if buy_router_price else 0.001
+            sell_slippage = abs(sell_router_price - sell_price) / sell_price if sell_router_price else 0.001
+            avg_slippage = (buy_slippage + sell_slippage) / 2
+            
+            # Use router prices if available, otherwise fall back to API prices with estimated slippage
+            if buy_router_price and sell_router_price:
+                effective_buy_price = buy_router_price
+                effective_sell_price = sell_router_price
+            else:
+                # Fallback: apply estimated slippage to API prices
+                effective_buy_price = buy_price * (1 + avg_slippage)
+                effective_sell_price = sell_price * (1 - avg_slippage)
+            
+            # Apply DEX fees to effective prices
+            effective_buy_price_with_fees = effective_buy_price * (1 + buy_dex_fee)
+            effective_sell_price_with_fees = effective_sell_price * (1 - sell_dex_fee)
+            
+            # Calculate final profit percentage
+            profit_pct = (effective_sell_price_with_fees - effective_buy_price_with_fees) / effective_buy_price_with_fees * 100
             
             # Use risk manager for trade assessment
             opportunity = {
@@ -145,10 +226,14 @@ def find_arbitrage_opportunities(w3, config, gas_price):
                 'sell_dex': best_sell_dex,
                 'buy_price': buy_price,
                 'sell_price': sell_price,
-                'profit_pct': profit_pct,
+                'profit_pct': profit_pct,  # Final profit after fees and slippage
+                'gross_profit_pct': (sell_price - buy_price) / buy_price * 100,  # For logging
+                'buy_fee': buy_dex_fee,
+                'sell_fee': sell_dex_fee,
+                'estimated_slippage': avg_slippage,
                 'buy_router': prices[best_buy_dex]['router'],
                 'sell_router': prices[best_sell_dex]['router'],
-                'amount': 1000000
+                'amount': amount_in
             }
             
             # Check if trade should be executed
@@ -157,8 +242,11 @@ def find_arbitrage_opportunities(w3, config, gas_price):
             if should_trade:
                 opportunities.append(opportunity)
             else:
-                # position_value = opportunity['amount'] * buy_price
-                logging.info(f"TRADE_REJECTED_V2: {reason} - Net: {opportunity['profit_pct']:.4f}%, Buy: {best_buy_dex}@{buy_price:.6f}, Sell: {best_sell_dex}@{sell_price:.6f}")
+                position_value = amount_in * buy_price
+                logging.info(f"TRADE_REJECTED_V2: {reason} - Net: {opportunity['profit_pct']:.4f}%, Gross: {opportunity['gross_profit_pct']:.4f}%, "
+                           f"Slippage: {opportunity.get('estimated_slippage', 0):.4f}, Buy: {best_buy_dex}@{buy_price:.6f}, "
+                           f"Sell: {best_sell_dex}@{sell_price:.6f}, Position: ${position_value:.2f}")
+    
     return opportunities
 
 def monitor():
@@ -212,6 +300,11 @@ def monitor():
     contract = w3.eth.contract(address=w3.toChecksumAddress(contract_address), abi=config.get('contract_abi', []))
     logging.info("Contract setup done")
     
+    # Initialize sandwich MEV system
+    redis_client = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
+    sandwich_bot = init_sandwich_mev(w3, redis_client)
+    logging.info("Sandwich MEV system initialized")
+    
     loan_provider = config['loanProviders'][0]['address']  # Use first loan provider
     
     last_report_time = time.time()
@@ -244,6 +337,10 @@ def monitor():
         
         # Find real arbitrage opportunities
         opportunities = find_arbitrage_opportunities(w3, config, gas_price)
+        
+        # Also monitor for sandwich MEV opportunities
+        # Note: This would run in parallel in production
+        # For now, we check periodically alongside arbitrage
         
         for opp in opportunities:
             logging.info(f"Found arbitrage opportunity: {opp['tokenIn'][:10]}... -> {opp['tokenOut'][:10]}... "
@@ -281,13 +378,18 @@ def monitor():
                 dex_router = w3.toChecksumAddress(opp['sell_router'])
                 
                 # Build transaction
+                token_in = w3.toChecksumAddress(opp['tokenIn'])
+                token_out = w3.toChecksumAddress(opp['tokenOut'])
+                amount = opp['amount']
+                
                 tx = contract.functions.executeArbitrage(
-                    w3.toChecksumAddress(opp['tokenIn']),
-                    w3.toChecksumAddress(opp['tokenOut']),
-                    opp['amount'],
+                    token_in,
+                    token_out,
+                    amount,
                     path,
                     dex_router,
-                    w3.toChecksumAddress(loan_provider)).build_transaction({
+                    w3.toChecksumAddress(loan_provider)
+                ).build_transaction({
                     'from': account.address,
                     'nonce': w3.eth.get_transaction_count(account.address),
                     'gas': 300000,  # Higher gas limit for flash loan
@@ -354,9 +456,9 @@ def monitor():
                         }
                         trading_analytics.record_trade(trade_data)
             else:
-                logging.info(f"Trade rejected: {reason} - Buy {opp['buy_price']:.6f} on {opp['buy_dex']}, "
-                           f"Sell {opp['sell_price']:.6f} on {opp['sell_dex']}, Profit: {opp['profit_pct']:.2f}%, "
-                           f"Position: ${position_size_usd:.2f}")
+                logging.info(f"TRADE_REJECTED_V2: {reason} - Net: {opp['profit_pct']:.4f}%, Gross: {opp['gross_profit_pct']:.4f}%, "
+                           f"Slippage: {opp.get('estimated_slippage', 0):.4f}, Buy: {opp['buy_dex']}@{opp['buy_price']:.6f}, "
+                           f"Sell: {opp['sell_dex']}@{opp['sell_price']:.6f}, Position: ${position_size_usd:.2f}")
         
         time.sleep(config['poll_interval'])
 

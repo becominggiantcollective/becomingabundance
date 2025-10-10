@@ -10,7 +10,7 @@ class GasOptimizer:
     def __init__(self):
         self.gas_history = []
         self.optimal_gas_window = 300  # 5 minutes
-        self.max_gas_price_gwei = 500  # Maximum gas price we're willing to pay
+        self.max_gas_price_gwei = 10000  # Maximum gas price we're willing to pay (EXTREME mode)
         self.min_gas_price_gwei = 30   # Minimum gas price for fast execution
 
         # Gas price tiers for different urgency levels

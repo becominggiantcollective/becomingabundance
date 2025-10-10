@@ -49,7 +49,7 @@
   "dexes": [
     {
       "name": "Quickswap",
-      "router": "0xa5E0829CaCEd8fFDD4De3c43696c57f7D7A678ff",
+      "router": "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff",
       "factory": "0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32",
       "fees": 0.003
     },
@@ -62,6 +62,7 @@
     {
       "name": "UniswapV3",
       "router": "0xE592427A0AEce92De3Edee1F18E0157C05861564",
+      "quoter": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "factory": "0x1F98431c8aD98523631AE4a59f267346ea31F984",
       "fee_tier": 3000
     }
@@ -346,7 +347,7 @@
     "timesteps": 10,
     "max_volatility": 0.05
   },
-  "gas_threshold": 250,
+  "gas_threshold": 10000,
   "poll_interval": 2,
   "authorized_users": [],
   "logging_level": "INFO",
