@@ -51,13 +51,13 @@
       "name": "Quickswap",
       "router": "0xa5E0829CaCEd8fFDD4De3c43696c57f7D7A678ff",
       "factory": "0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32",
-      "fees": 0.002
+      "fees": 0.003
     },
     {
       "name": "SushiSwap",
       "router": "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506",
       "factory": "0xc35DADB65012eC5796536bD9864eD8773aBc74C4",
-      "fees": 0.002
+      "fees": 0.003
     },
     {
       "name": "UniswapV3",
@@ -95,6 +95,230 @@
       "name": "USDT/USDC",
       "tokenIn": "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
       "tokenOut": "0x3c499C542cEF5E3811e1192CE70d8cc03d5C3359",
+      "amount": 1000000,
+      "path": [],
+      "dex": "SushiSwap"
+    },
+    {
+      "name": "WBTC/USDC",
+      "tokenIn": "0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6",
+      "tokenOut": "0x3c499C542cEF5E3811e1192CE70d8cc03d5C3359",
+      "amount": 1000000,
+      "path": [],
+      "dex": "Quickswap"
+    },
+    {
+      "name": "WBTC/USDC",
+      "tokenIn": "0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6",
+      "tokenOut": "0x3c499C542cEF5E3811e1192CE70d8cc03d5C3359",
+      "amount": 1000000,
+      "path": [],
+      "dex": "SushiSwap"
+    },
+    {
+      "name": "WETH/USDC",
+      "tokenIn": "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619",
+      "tokenOut": "0x3c499C542cEF5E3811e1192CE70d8cc03d5C3359",
+      "amount": 1000000,
+      "path": [],
+      "dex": "Quickswap"
+    },
+    {
+      "name": "WETH/USDC",
+      "tokenIn": "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619",
+      "tokenOut": "0x3c499C542cEF5E3811e1192CE70d8cc03d5C3359",
+      "amount": 1000000,
+      "path": [],
+      "dex": "SushiSwap"
+    },
+    {
+      "name": "AAVE/USDC",
+      "tokenIn": "0xD6DF932A45C0f255f85145f286eA0b292B21C90Bc",
+      "tokenOut": "0x3c499C542cEF5E3811e1192CE70d8cc03d5C3359",
+      "amount": 1000000,
+      "path": [],
+      "dex": "Quickswap"
+    },
+    {
+      "name": "AAVE/USDC",
+      "tokenIn": "0xD6DF932A45C0f255f85145f286eA0b292B21C90Bc",
+      "tokenOut": "0x3c499C542cEF5E3811e1192CE70d8cc03d5C3359",
+      "amount": 1000000,
+      "path": [],
+      "dex": "SushiSwap"
+    },
+    {
+      "name": "LINK/USDC",
+      "tokenIn": "0x53E0bca35eC356BD5ddDFebbD1Fc0fD03FaBad39",
+      "tokenOut": "0x3c499C542cEF5E3811e1192CE70d8cc03d5C3359",
+      "amount": 1000000,
+      "path": [],
+      "dex": "Quickswap"
+    },
+    {
+      "name": "LINK/USDC",
+      "tokenIn": "0x53E0bca35eC356BD5ddDFebbD1Fc0fD03FaBad39",
+      "tokenOut": "0x3c499C542cEF5E3811e1192CE70d8cc03d5C3359",
+      "amount": 1000000,
+      "path": [],
+      "dex": "SushiSwap"
+    },
+    {
+      "name": "SUSHI/WMATIC",
+      "tokenIn": "0x0b3F868E0BE5597D5DB7fEB59E1CADBb0fdDa50a",
+      "tokenOut": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      "amount": 1000000,
+      "path": [],
+      "dex": "Quickswap"
+    },
+    {
+      "name": "SUSHI/WMATIC",
+      "tokenIn": "0x0b3F868E0BE5597D5DB7fEB59E1CADBb0fdDa50a",
+      "tokenOut": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      "amount": 1000000,
+      "path": [],
+      "dex": "SushiSwap"
+    },
+    {
+      "name": "CRV/USDC",
+      "tokenIn": "0x172370d5Cd63279eFa6d502DAB29171933a610AF",
+      "tokenOut": "0x3c499C542cEF5E3811e1192CE70d8cc03d5C3359",
+      "amount": 1000000,
+      "path": [],
+      "dex": "Quickswap"
+    },
+    {
+      "name": "CRV/USDC",
+      "tokenIn": "0x172370d5Cd63279eFa6d502DAB29171933a610AF",
+      "tokenOut": "0x3c499C542cEF5E3811e1192CE70d8cc03d5C3359",
+      "amount": 1000000,
+      "path": [],
+      "dex": "SushiSwap"
+    },
+    {
+      "name": "UNI/USDC",
+      "tokenIn": "0xb33EaAd8d922B1083446DC23f610c2567fB5180f",
+      "tokenOut": "0x3c499C542cEF5E3811e1192CE70d8cc03d5C3359",
+      "amount": 1000000,
+      "path": [],
+      "dex": "Quickswap"
+    },
+    {
+      "name": "UNI/USDC",
+      "tokenIn": "0xb33EaAd8d922B1083446DC23f610c2567fB5180f",
+      "tokenOut": "0x3c499C542cEF5E3811e1192CE70d8cc03d5C3359",
+      "amount": 1000000,
+      "path": [],
+      "dex": "SushiSwap"
+    },
+    {
+      "name": "BAL/USDC",
+      "tokenIn": "0x9a71012B13CA4d3D0Cdc72A177DF3ef03b0E76Ec",
+      "tokenOut": "0x3c499C542cEF5E3811e1192CE70d8cc03d5C3359",
+      "amount": 1000000,
+      "path": [],
+      "dex": "Quickswap"
+    },
+    {
+      "name": "BAL/USDC",
+      "tokenIn": "0x9a71012B13CA4d3D0Cdc72A177DF3ef03b0E76Ec",
+      "tokenOut": "0x3c499C542cEF5E3811e1192CE70d8cc03d5C3359",
+      "amount": 1000000,
+      "path": [],
+      "dex": "SushiSwap"
+    },
+    {
+      "name": "COMP/USDC",
+      "tokenIn": "0x8505b9d2254A7Ae468c0E9ddD10Ccea3A837aef5",
+      "tokenOut": "0x3c499C542cEF5E3811e1192CE70d8cc03d5C3359",
+      "amount": 1000000,
+      "path": [],
+      "dex": "Quickswap"
+    },
+    {
+      "name": "COMP/USDC",
+      "tokenIn": "0x8505b9d2254A7Ae468c0E9ddD10Ccea3A837aef5",
+      "tokenOut": "0x3c499C542cEF5E3811e1192CE70d8cc03d5C3359",
+      "amount": 1000000,
+      "path": [],
+      "dex": "SushiSwap"
+    },
+    {
+      "name": "MKR/USDC",
+      "tokenIn": "0x6f7C932e7684666C9fd1d44527765433e01fF61d9",
+      "tokenOut": "0x3c499C542cEF5E3811e1192CE70d8cc03d5C3359",
+      "amount": 1000000,
+      "path": [],
+      "dex": "Quickswap"
+    },
+    {
+      "name": "MKR/USDC",
+      "tokenIn": "0x6f7C932e7684666C9fd1d44527765433e01fF61d9",
+      "tokenOut": "0x3c499C542cEF5E3811e1192CE70d8cc03d5C3359",
+      "amount": 1000000,
+      "path": [],
+      "dex": "SushiSwap"
+    },
+    {
+      "name": "YFI/USDC",
+      "tokenIn": "0xDA537104D6A5edd53c6fBba9A898708E465260b6",
+      "tokenOut": "0x3c499C542cEF5E3811e1192CE70d8cc03d5C3359",
+      "amount": 1000000,
+      "path": [],
+      "dex": "Quickswap"
+    },
+    {
+      "name": "YFI/USDC",
+      "tokenIn": "0xDA537104D6A5edd53c6fBba9A898708E465260b6",
+      "tokenOut": "0x3c499C542cEF5E3811e1192CE70d8cc03d5C3359",
+      "amount": 1000000,
+      "path": [],
+      "dex": "SushiSwap"
+    },
+    {
+      "name": "SNX/USDC",
+      "tokenIn": "0x50B728D8D964fd00C2d0AAD81718b71311feF68a",
+      "tokenOut": "0x3c499C542cEF5E3811e1192CE70d8cc03d5C3359",
+      "amount": 1000000,
+      "path": [],
+      "dex": "Quickswap"
+    },
+    {
+      "name": "SNX/USDC",
+      "tokenIn": "0x50B728D8D964fd00C2d0AAD81718b71311feF68a",
+      "tokenOut": "0x3c499C542cEF5E3811e1192CE70d8cc03d5C3359",
+      "amount": 1000000,
+      "path": [],
+      "dex": "SushiSwap"
+    },
+    {
+      "name": "SUSHI/USDC",
+      "tokenIn": "0x0b3F868E0BE5597D5DB7fEB59E1CADBb0fdDa50a",
+      "tokenOut": "0x3c499C542cEF5E3811e1192CE70d8cc03d5C3359",
+      "amount": 1000000,
+      "path": [],
+      "dex": "Quickswap"
+    },
+    {
+      "name": "SUSHI/USDC",
+      "tokenIn": "0x0b3F868E0BE5597D5DB7fEB59E1CADBb0fdDa50a",
+      "tokenOut": "0x3c499C542cEF5E3811e1192CE70d8cc03d5C3359",
+      "amount": 1000000,
+      "path": [],
+      "dex": "SushiSwap"
+    },
+    {
+      "name": "WMATIC/USDT",
+      "tokenIn": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      "tokenOut": "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
+      "amount": 1000000,
+      "path": [],
+      "dex": "Quickswap"
+    },
+    {
+      "name": "WMATIC/USDT",
+      "tokenIn": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      "tokenOut": "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
       "amount": 1000000,
       "path": [],
       "dex": "SushiSwap"

@@ -8,7 +8,7 @@ from web3 import Web3
 from web3.exceptions import ContractLogicError, TransactionNotFound
 from web3.middleware import geth_poa_middleware
 from eth_account import Account
-# from ml_config import predict_opportunity  # Commented out due to XGBoost issues
+from ml_config import predict_opportunity
 from load_config import load_config_with_env_vars
 from dotenv import load_dotenv
 from price_oracle import fetch_data
@@ -157,8 +157,8 @@ def find_arbitrage_opportunities(w3, config, gas_price):
             if should_trade:
                 opportunities.append(opportunity)
             else:
-                # position_value = opportunity['amount'] * buy_price
-                logging.info(f"TRADE_REJECTED_V2: {reason} - Net: {opportunity['profit_pct']:.4f}%, Buy: {best_buy_dex}@{buy_price:.6f}, Sell: {best_sell_dex}@{sell_price:.6f}")
+                logging.info(f"Trade rejected: {reason} (Profit: {profit_pct:.4f}%, Buy: {best_buy_dex}@{buy_price:.6f}, Sell: {best_sell_dex}@{sell_price:.6f})")
+    
     return opportunities
 
 def monitor():
@@ -233,11 +233,11 @@ def monitor():
         optimized_gas_price = gas_optimizer.get_optimal_gas_price(w3, 'standard')
         gas_trend = gas_optimizer.get_gas_trend()
         
-        logging.info(f"Gas price: {Web3.fromWei(gas_price, 'gwei'):.1f} gwei, "
-                    f"Optimized: {Web3.fromWei(optimized_gas_price, 'gwei'):.1f} gwei, "
+        logging.info(f"Gas price: {w3.from_wei(gas_price, 'gwei'):.1f} gwei, "
+                    f"Optimized: {w3.from_wei(optimized_gas_price, 'gwei'):.1f} gwei, "
                     f"Trend: {gas_trend}")
         
-        if optimized_gas_price > Web3.toWei(config['gas_threshold'], 'gwei'):
+        if optimized_gas_price > w3.toWei(config['gas_threshold'], 'gwei'):
             logging.info("Optimized gas price too high, waiting for better conditions...")
             time.sleep(config['poll_interval'])
             continue
@@ -287,7 +287,8 @@ def monitor():
                     opp['amount'],
                     path,
                     dex_router,
-                    w3.toChecksumAddress(loan_provider)).build_transaction({
+                    w3.toChecksumAddress(loan_provider)
+                }).build_transaction({
                     'from': account.address,
                     'nonce': w3.eth.get_transaction_count(account.address),
                     'gas': 300000,  # Higher gas limit for flash loan

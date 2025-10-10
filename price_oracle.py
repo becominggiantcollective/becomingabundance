@@ -24,6 +24,28 @@ class PriceOracle:
         """Get token symbol from address"""
         return self.token_symbols.get(address, address[:10])
 
+    def get_eth_price_usd(self) -> float:
+        """Get current ETH price in USD"""
+        try:
+            url = "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd"
+            response = self.session.get(url, timeout=2)
+            data = response.json()
+            return data.get('ethereum', {}).get('usd', 2000.0)  # Fallback to $2000
+        except Exception as e:
+            logging.warning(f"Failed to get ETH price: {e}")
+            return 2000.0  # Fallback price
+
+    def get_matic_price_usd(self) -> float:
+        """Get current MATIC price in USD (for Polygon gas calculations)"""
+        try:
+            url = "https://api.coingecko.com/api/v3/simple/price?ids=matic-network&vs_currencies=usd"
+            response = self.session.get(url, timeout=2)
+            data = response.json()
+            return data.get('matic-network', {}).get('usd', 1.0)  # Fallback to $1
+        except Exception as e:
+            logging.warning(f"Failed to get MATIC price: {e}")
+            return 1.0  # Fallback price
+
     def get_price_from_api(self, token_in: str, token_out: str) -> Optional[float]:
         """Get price from external API (much faster than blockchain calls)"""
         try:
@@ -38,13 +60,21 @@ class PriceOracle:
                 data = response.json()
                 return data.get('matic-network', {}).get('usd', 0)
 
-            elif symbol_in == 'USDC' and symbol_out == 'ETH':
+            elif symbol_in == 'ETH' and symbol_out == 'USDC':
                 # ETH/USD price
                 url = "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd"
                 response = self.session.get(url, timeout=2)
                 data = response.json()
                 eth_usd = data.get('ethereum', {}).get('usd', 0)
                 return eth_usd if eth_usd > 0 else 0
+
+            elif symbol_in == 'USDC' and symbol_out == 'ETH':
+                # ETH/USD price (inverse)
+                url = "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd"
+                response = self.session.get(url, timeout=2)
+                data = response.json()
+                eth_usd = data.get('ethereum', {}).get('usd', 0)
+                return 1/eth_usd if eth_usd > 0 else 0
 
             elif symbol_in == 'USDT' and symbol_out == 'USDC':
                 # USDT/USDC should be ~1.0

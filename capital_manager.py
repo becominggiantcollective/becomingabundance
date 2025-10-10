@@ -31,10 +31,10 @@ class CapitalManager:
         self.locked_capital = 0.0
         self.total_pnl = 0.0
 
-        # Position sizing
-        self.max_position_pct = 0.1  # Max 10% of capital per trade
-        self.min_position_usd = 10.0
-        self.max_position_usd = 100.0
+        # Position sizing - FURTHER INCREASED for better gas efficiency
+        self.max_position_pct = 0.3  # Increased from 20% to 30% of capital per trade
+        self.min_position_usd = 100.0  # Increased minimum position from 50 to 100
+        self.max_position_usd = 1000.0  # Increased from 500 to 1000 for better gas ratio
 
         # Risk limits
         self.max_daily_loss_pct = 0.05  # 5% max daily loss

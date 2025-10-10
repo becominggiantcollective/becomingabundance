@@ -157,8 +157,8 @@ def find_arbitrage_opportunities(w3, config, gas_price):
             if should_trade:
                 opportunities.append(opportunity)
             else:
-                # position_value = opportunity['amount'] * buy_price
-                logging.info(f"TRADE_REJECTED_V2: {reason} - Net: {opportunity['profit_pct']:.4f}%, Buy: {best_buy_dex}@{buy_price:.6f}, Sell: {best_sell_dex}@{sell_price:.6f}")
+                logging.info(f"Trade rejected: {reason} (Profit: {profit_pct:.4f}%, Buy: {best_buy_dex}@{buy_price:.6f}, Sell: {best_sell_dex}@{sell_price:.6f})")
+    
     return opportunities
 
 def monitor():

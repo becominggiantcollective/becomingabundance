@@ -24,7 +24,7 @@ class RiskManager:
     def __init__(self):
         self.daily_loss_limit = 50  # USD
         self.max_consecutive_losses = 3
-        self.min_profit_threshold = 2.0  # 2% minimum profit
+        self.min_profit_threshold = 0.5  # 0.5% minimum profit for testing
         self.max_position_size = 1000  # USD max per trade
 
         # Track performance
@@ -52,20 +52,37 @@ class RiskManager:
             logging.info("Daily statistics reset")
 
     def calculate_gas_cost_usd(self, gas_price_wei: int, estimated_gas: int = 300000) -> float:
-        """Calculate gas cost in USD"""
-        # Rough conversion: 1 ETH = ~$2000, gas price in wei
-        eth_cost = (gas_price_wei * estimated_gas) / 10**18
-        return eth_cost * 2000  # Convert to USD
+        """Calculate gas cost in USD (Polygon uses MATIC for gas)"""
+        try:
+            # Calculate gas cost in wei
+            gas_cost_wei = gas_price_wei * estimated_gas
+            
+            # Convert to MATIC (Polygon native token)
+            from web3 import Web3
+            gas_cost_matic = Web3.fromWei(gas_cost_wei, 'ether')
+            
+            # Get current MATIC price from oracle
+            from price_oracle import price_oracle
+            matic_price_usd = price_oracle.get_matic_price_usd()
+            
+            return float(gas_cost_matic) * matic_price_usd
+        except Exception as e:
+            logging.warning(f"Failed to calculate gas cost: {e}")
+            return 0.15  # Fallback estimate for Polygon gas
 
     def assess_trade_risk(self, opportunity: Dict, gas_price: int) -> TradeRisk:
         """Assess overall risk of a trade opportunity"""
+        # opportunity['profit_pct'] is already net profit after DEX fees and slippage
+        # We only need to account for gas costs here
         profit_pct = opportunity['profit_pct']
         gas_cost_usd = self.calculate_gas_cost_usd(gas_price)
 
-        # Calculate net profit after gas costs
-        # Assume trade size creates enough profit to cover gas
-        estimated_trade_value = 1000  # USD (rough estimate)
-        gas_cost_pct = (gas_cost_usd / estimated_trade_value) * 100
+        # Calculate trade value based on opportunity amount
+        # Assume amount is in smallest token units (6 decimals for USDC)
+        trade_amount_usd = opportunity.get('amount', 1000000) / 10**6  # Convert to USD value
+
+        # Calculate gas cost as percentage of trade value
+        gas_cost_pct = (gas_cost_usd / trade_amount_usd) * 100 if trade_amount_usd > 0 else 100
         net_profit_pct = profit_pct - gas_cost_pct
 
         # Slippage risk based on liquidity (simplified)
@@ -110,12 +127,12 @@ class RiskManager:
 
         # Minimum profit threshold
         if risk.profit_pct < self.min_profit_threshold:
-            return False, ".2f"
+            return False, f"Profit too low: {risk.profit_pct:.2f}%"
 
         # Gas price check
         gas_gwei = gas_price / 10**9
         if gas_gwei > self.gas_thresholds[RiskLevel.HIGH]:
-            return False, ".1f"
+            return False, f"Gas price too high: {gas_gwei:.1f} gwei"
 
         # Risk level check
         if risk.overall_risk == RiskLevel.EXTREME:
@@ -124,9 +141,9 @@ class RiskManager:
         # Position size check
         trade_value = min(self.max_position_size, 1000)  # USD
         if trade_value > self.max_position_size:
-            return False, ".0f"
+            return False, f"Position size too large: ${trade_value:.0f}"
 
-        return True, ".2f"
+        return True, f"Trade approved: {risk.profit_pct:.2f}% net profit"
 
     def record_trade_result(self, profit_usd: float, success: bool):
         """Record the result of a trade"""
@@ -134,10 +151,10 @@ class RiskManager:
 
         if success:
             self.consecutive_losses = 0
-            logging.info(".2f")
+            logging.info(f"Trade successful: +${profit_usd:.2f}")
         else:
             self.consecutive_losses += 1
-            logging.warning(".2f")
+            logging.warning(f"Trade failed: -${abs(profit_usd):.2f}")
 
             if self.consecutive_losses >= self.max_consecutive_losses:
                 self.emergency_stop = True
