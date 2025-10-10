@@ -1,6 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+// ⚠️ WARNING: THIS CONTRACT IS NOT FUNCTIONAL - DO NOT DEPLOY TO MAINNET ⚠️
+// 
+// Critical Issues:
+// 1. Flash loan repayment is not implemented (line 37)
+// 2. Wrong callback interface - Aave/Balancer won't call this
+// 3. Missing token approvals - swaps will fail
+// 4. No access controls - vulnerable to attacks
+//
+// See KNOWN_ISSUES.md for complete list of problems
+// See ROADMAP.md for fixes required before deployment
+
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 

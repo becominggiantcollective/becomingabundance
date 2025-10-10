@@ -1,4 +1,19 @@
 
+# ⚠️ WARNING: DO NOT DEPLOY TO MAINNET ⚠️
+#
+# The ArbitrageBot.sol smart contract has critical issues that will cause
+# all transactions to fail. See KNOWN_ISSUES.md for details.
+#
+# This script should only be used for testnet deployment after fixes are complete.
+#
+# TO DEPLOY SAFELY:
+# 1. Fix all critical issues in ArbitrageBot.sol
+# 2. Add comprehensive tests
+# 3. Deploy to Amoy testnet first
+# 4. Test with 100+ trades on testnet
+# 5. Only deploy to mainnet if testnet is profitable
+#
+# Run with: python deploy.py --network testnet --dry-run
 
 import time
 import redis
