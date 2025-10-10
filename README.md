@@ -4,6 +4,22 @@
 
 **IMPORTANT: This bot is currently in development and NOT profitable. Do not deploy to mainnet or risk real capital.**
 
+---
+
+## 📋 Start Here
+
+If you're just arriving, read these documents in order:
+
+1. **[EXECUTIVE_SUMMARY.md](EXECUTIVE_SUMMARY.md)** - Start here for the complete story
+2. **[PROJECT_ASSESSMENT.md](PROJECT_ASSESSMENT.md)** - Detailed technical analysis
+3. **[STATUS.md](STATUS.md)** - Visual dashboard of current state
+4. **[KNOWN_ISSUES.md](KNOWN_ISSUES.md)** - All 21 bugs and issues
+5. **[ROADMAP.md](ROADMAP.md)** - Path to profitability (if you proceed)
+
+**TL;DR:** Bot is in test mode, has critical bugs, uses fake price data, and has never executed a real trade. Would require 150-240 hours + $3k-$8k investment to have a 10-20% chance of profitability.
+
+---
+
 ## Overview
 An experimental automated bot for exploiting price discrepancies across Polygon DEXs (Quickswap, SushiSwap, Uniswap V3) using flashloans from Balancer or Aave. Currently in **TEST MODE** - no real trades are being executed.
 
@@ -13,7 +29,7 @@ An experimental automated bot for exploiting price discrepancies across Polygon 
 - 🟡 Price oracle uses mock data with artificial spreads
 - 🔴 No proven profitability with real market data
 
-**See [PROJECT_ASSESSMENT.md](PROJECT_ASSESSMENT.md) for detailed status review.**
+**See [EXECUTIVE_SUMMARY.md](EXECUTIVE_SUMMARY.md) for complete project review.**
 
 ## Prerequisites
 - Python 3.8+
