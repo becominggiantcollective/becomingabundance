@@ -4,6 +4,23 @@ import logging
 from typing import Dict, Optional, Tuple
 import json
 
+# ⚠️ WARNING: THIS PRICE ORACLE USES FAKE DATA ⚠️
+#
+# Lines 98-105 create artificial price spreads that don't exist in reality:
+# - Quickswap: -0.3% (fake)
+# - SushiSwap: +0.5% (fake)
+# - UniswapV3: +0.2% (fake)
+#
+# This creates "arbitrage opportunities" that don't exist in real markets.
+# Real DEX spreads are 0.01-0.05%, not 0.3-0.5%.
+#
+# BEFORE LIVE TRADING:
+# 1. Implement real price fetching from DEX reserves
+# 2. Calculate prices from actual liquidity pool data
+# 3. Test on testnet with real market conditions
+#
+# See ROADMAP.md Phase 1.2 for implementation details
+
 class PriceOracle:
     """Fast price oracle using APIs instead of slow blockchain calls"""
 
@@ -94,11 +111,14 @@ class PriceOracle:
         if base_price is None or base_price == 0:
             return 1.0
 
-        # Add artificial spread between DEXes to create arbitrage opportunities
+        # ⚠️ WARNING: THESE ARE FAKE SPREADS FOR TESTING ONLY ⚠️
+        # Real DEX prices are nearly identical (0.01-0.05% difference)
+        # These artificial spreads create fake arbitrage opportunities
+        # DO NOT use this in production - implement real price fetching
         spreads = {
-            'Quickswap': -0.003,  # 0.3% lower (buy here)
-            'SushiSwap': 0.005,   # 0.5% higher (sell here)
-            'UniswapV3': 0.002,   # 0.2% higher
+            'Quickswap': -0.003,  # FAKE 0.3% lower (buy here)
+            'SushiSwap': 0.005,   # FAKE 0.5% higher (sell here)
+            'UniswapV3': 0.002,   # FAKE 0.2% higher
         }
 
         spread = spreads.get(dex_name, 0.0)

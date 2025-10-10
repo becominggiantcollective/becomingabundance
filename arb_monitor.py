@@ -1,4 +1,20 @@
 
+# ⚠️ WARNING: TEST MODE ONLY - DO NOT USE FOR LIVE TRADING ⚠️
+#
+# This bot currently:
+# 1. Uses artificial price spreads (not real market data)
+# 2. Has a non-functional smart contract (flash loans won't work)
+# 3. Is set to test_mode=True (simulates trades, doesn't execute)
+#
+# Before attempting live trading:
+# 1. Read PROJECT_ASSESSMENT.md for full status
+# 2. Read ROADMAP.md for required fixes (150-240 hours)
+# 3. Fix all critical issues in KNOWN_ISSUES.md
+# 4. Test on Amoy testnet for 1+ week
+# 5. Only go live if provably profitable on testnet
+#
+# Current Status: NOT PROFITABLE - would lose money if deployed
+
 import time
 import json
 import redis
@@ -21,6 +37,12 @@ from gas_optimizer import gas_optimizer
 logging.basicConfig(filename='bot.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 test_mode = True  # Set to True for testing without execution
+# ⚠️ DO NOT SET TO FALSE UNTIL:
+# 1. Smart contract is fixed (see KNOWN_ISSUES.md)
+# 2. Real price oracle is implemented (not artificial spreads)
+# 3. Testnet testing shows consistent profitability
+# 4. Security audit is complete
+# Setting to False now will only waste gas fees with 0% success rate
 
 UNISWAP_V2_FACTORY_ABI = [
     {
