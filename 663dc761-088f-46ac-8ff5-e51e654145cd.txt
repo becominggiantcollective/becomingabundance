@@ -1,7 +1,0 @@
-.env
-bot.db
-*.pkl
-backup_*.db.gz
-artifacts/
-node_modules/
-*.log

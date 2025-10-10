@@ -1,26 +1,354 @@
 {
-    "chains": [
-        {"name": "Polygon", "chain_id": 137, "rpc_url": "https://polygon-rpc.com"},
-        {"name": "Arbitrum", "chain_id": 42161, "rpc_url": "https://arb1.arbitrum.io/rpc"},
-        {"name": "Optimism", "chain_id": 10, "rpc_url": "https://mainnet.optimism.io", "fallback_rpc": "https://rpc.ankr.com/optimism"}
-    ],
-    "dexes": [
-        {"name": "Quickswap", "router": "0xa5E0829CaCEd8fFDD4De3cC9083f6150a9436c2b", "fees": 0.002},
-        {"name": "SushiSwap", "router": "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506", "fees": 0.002},
-        {"name": "UniswapV3", "router": "0xE592427A0AEce92De3Edee1F18E0157C05861564", "fee_tier": 3000}
-    ],
-    "pairs": [
-        {"name": "USDC/ETH", "tokenIn": "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174", "tokenOut": "0x7ceB23fD6bD3aC3f3b9896eF6D4a8373b52d2e3e", "amount": 1000000, "path": [], "dex": "Quickswap"},
-        {"name": "USDT/WMATIC", "tokenIn": "0xc2132D05D31c914a87C6611C10748AEb04B58e8F", "tokenOut": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270", "amount": 1000000, "path": [], "dex": "SushiSwap"}
-    ],
-    "ml_settings": {
-        "ml_model": "xgboost",
-        "ml_threshold": 0.8,
-        "timesteps": 10,
-        "max_volatility": 0.05
+  "chains": [
+    {
+      "name": "Polygon",
+      "chain_id": 137,
+      "rpc_url": ["${POLYGON_RPC_URL}", "${POLYGON_FALLBACK_RPC_URL}", "https://polygon-rpc.com"],
+      "wss_url": ["${POLYGON_WSS_URL}", "wss://ws-polygon-mainnet.chainstacklabs.com"],
+      "explorer": "https://polygonscan.com"
     },
-    "gas_threshold": 100,
-    "poll_interval": 2,
-    "authorized_users": [],
-    "logging_level": "INFO"
+    {
+      "name": "Amoy",
+      "chain_id": 80002,
+      "rpc_url": "https://rpc-amoy.polygon.technology",
+      "wss_url": "wss://rpc-amoy.polygon.technology",
+      "faucet": "https://faucet.polygon.technology/amoy",
+      "explorer": "https://amoy.polygonscan.com"
+    },
+    {
+      "name": "Arbitrum",
+      "chain_id": 42161,
+      "rpc_url": "https://arb1.arbitrum.io/rpc",
+      "wss_url": "wss://arb1.arbitrum.io/ws",
+      "explorer": "https://arbiscan.io"
+    },
+    {
+      "name": "Arbitrum Sepolia",
+      "chain_id": 421614,
+      "rpc_url": "https://sepolia-rollup.arbitrum.io/rpc",
+      "wss_url": "wss://sepolia-rollup.arbitrum.io/ws",
+      "faucet": "https://faucet.triangleplatform.com/arbitrum/sepolia",
+      "explorer": "https://sepolia.arbiscan.io"
+    },
+    {
+      "name": "Optimism",
+      "chain_id": 10,
+      "rpc_url": "https://mainnet.optimism.io",
+      "wss_url": "wss://mainnet.optimism.io",
+      "explorer": "https://optimistic.etherscan.io"
+    },
+    {
+      "name": "OP Sepolia",
+      "chain_id": 11155420,
+      "rpc_url": "https://sepolia.optimism.io",
+      "wss_url": "wss://sepolia.optimism.io",
+      "faucet": "https://www.alchemy.com/faucets/optimism-sepolia",
+      "explorer": "https://sepolia-optimism.etherscan.io"
+    }
+  ],
+  "dexes": [
+    {
+      "name": "Quickswap",
+      "router": "0xa5E0829CaCEd8fFDD4De3c43696c57f7D7A678ff",
+      "factory": "0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32",
+      "fees": 0.002
+    },
+    {
+      "name": "SushiSwap",
+      "router": "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506",
+      "factory": "0xc35DADB65012eC5796536bD9864eD8773aBc74C4",
+      "fees": 0.002
+    },
+    {
+      "name": "UniswapV3",
+      "router": "0xE592427A0AEce92De3Edee1F18E0157C05861564",
+      "factory": "0x1F98431c8aD98523631AE4a59f267346ea31F984",
+      "fee_tier": 3000
+    }
+  ],
+  "pairs": [
+    {
+      "name": "USDC/WMATIC",
+      "tokenIn": "0x3c499C542cEF5E3811e1192CE70d8cc03d5C3359",
+      "tokenOut": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      "amount": 1000000,
+      "path": [],
+      "dex": "Quickswap"
+    },
+    {
+      "name": "USDC/WMATIC",
+      "tokenIn": "0x3c499C542cEF5E3811e1192CE70d8cc03d5C3359",
+      "tokenOut": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      "amount": 1000000,
+      "path": [],
+      "dex": "SushiSwap"
+    },
+    {
+      "name": "USDT/USDC",
+      "tokenIn": "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
+      "tokenOut": "0x3c499C542cEF5E3811e1192CE70d8cc03d5C3359",
+      "amount": 1000000,
+      "path": [],
+      "dex": "Quickswap"
+    },
+    {
+      "name": "USDT/USDC",
+      "tokenIn": "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
+      "tokenOut": "0x3c499C542cEF5E3811e1192CE70d8cc03d5C3359",
+      "amount": 1000000,
+      "path": [],
+      "dex": "SushiSwap"
+    }
+  ],
+  "loanProviders": [
+    {
+      "name": "AaveV3",
+      "address": "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
+      "network": "Polygon",
+      "testnet_address": "0x0b913A76beFF0B02B3B5aACa393B59a18A5D3cD4",
+      "testnet_network": "Amoy"
+    },
+    {
+      "name": "BalancerV2",
+      "address": "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
+      "network": "Polygon",
+      "testnet_address": "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
+      "testnet_network": "Amoy"
+    }
+  ],
+  "ml_settings": {
+    "ml_model": "xgboost",
+    "ml_threshold": 0.8,
+    "timesteps": 10,
+    "max_volatility": 0.05
+  },
+  "gas_threshold": 250,
+  "poll_interval": 2,
+  "authorized_users": [],
+  "logging_level": "INFO",
+  "contract_address": "0xF247c72EeEa89D7B211DE96AE36De94F13b9Fb98",
+  "minProfit": 1000000,
+  "contract_abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address[]",
+          "name": "_dexes",
+          "type": "address[]"
+        },
+        {
+          "internalType": "address[]",
+          "name": "_loanProviders",
+          "type": "address[]"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_minProfit",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "dexes",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "tokenIn",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "tokenOut",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address[]",
+          "name": "path",
+          "type": "address[]"
+        },
+        {
+          "internalType": "address",
+          "name": "dex",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "loanProvider",
+          "type": "address"
+        }
+      ],
+      "name": "executeArbitrage",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        }
+      ],
+      "name": "flashLoanCallback",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "loanProviders",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "maxSlippage",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "minProfit",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "pool",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amountIn",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "minOut",
+          "type": "uint256"
+        }
+      ],
+      "name": "swapUniswapV3",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ]
 }
